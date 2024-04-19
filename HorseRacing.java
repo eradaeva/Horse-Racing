@@ -8,16 +8,24 @@ public class HorseRacing {
         Scanner scanner = new Scanner(System.in);
         Random random = new Random();
         Horse horse;
+        char[] symbols = new char[]{
+            '\u265A', '\u265B', '\u265C', '\u265D', '\u265E', '\u265F',
+            '\u2660', '\u2661', '\u2662', '\u2663', '\u2664', '\u2665'
+        };
+
 
         System.out.print("Enter race distance: ");
         int distance = Integer.parseInt(scanner.nextLine());
 
+        System.out.print("Choose number of horses: ");
+        int horsesNum = Integer.parseInt(scanner.nextLine());
+
         Race race = new Race(distance);
-        for (int i = 1; i <= 3; i++) {
+        for (int i = 1; i <= horsesNum; i++) {
             horse = new Horse(
-                String.valueOf(i).charAt(0), 
+                symbols[random.nextInt(symbols.length)], 
                 "Horse " + i, 
-                random.nextDouble()
+                random.nextDouble(0.1, 1)
             );
 
             race.addHorse(horse, i);
