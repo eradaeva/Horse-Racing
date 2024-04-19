@@ -1,4 +1,4 @@
-
+package Part1;
 /**
  * Horse Class represents a horse in race. 
  * Contains all the information, like name, symbol, distance travelled, etc.

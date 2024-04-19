@@ -33,6 +33,20 @@ public class HorseRacing {
 
         race.startRace();
 
+        System.out.println("Another round? (y/n)");
+        String input = scanner.nextLine();
+        while (!input.equals("n")) {
+            if (input.equals("y")) {
+                race.startRace();
+                System.out.println("Another round? (y/n)");
+                input = scanner.nextLine();
+            } else {
+                System.out.println("\nError: the answer must be either 'y' or 'n'. Try again.");
+                System.out.println("Another round? (y/n)");
+                input = scanner.nextLine();
+            }
+        }
+
         scanner.close();
     }
 }

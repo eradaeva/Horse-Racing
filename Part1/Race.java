@@ -73,6 +73,7 @@ public class Race
         //declare a local variable to tell us when the race is finished
         boolean finished = false;
         boolean anyAlive = true;
+        Horse winner = null;
         
         //reset all the lanes (all horses not fallen and back to 0). 
         for (int i = 0; i < maxHorses; i++) {
@@ -97,6 +98,7 @@ public class Race
             for (int i = 0; i < maxHorses; i++) {
                 if (horses[i] != null && raceWonBy(horses[i])) {
                     finished = true;
+                    winner = horses[i];
                 }
             }
            
@@ -104,6 +106,33 @@ public class Race
             try{ 
                 TimeUnit.MILLISECONDS.sleep(100);
             }catch(Exception e){}
+        }
+
+        double confidence;
+        if (finished) {
+            System.out.println("And the winner is " + winner.getName().toUpperCase());
+            confidence = winner.getConfidence();
+            confidence *= 1.1;
+            if (confidence > 1) confidence = 1.0;
+            winner.setConfidence(confidence);
+
+            for (int i = 0; i < maxHorses; i++) {
+                if (horses[i] != null && horses[i] != winner) {
+                    confidence = horses[i].getConfidence();
+                    confidence /= 1.2;
+                    horses[i].setConfidence(confidence);
+                }
+            }
+
+        } else {
+            System.out.println("All horses failed. No winner this time.");
+            for (int i = 0; i < maxHorses; i++) {
+                if (horses[i] != null) {
+                    confidence = horses[i].getConfidence();
+                    confidence /= 1.05;
+                    horses[i].setConfidence(confidence);
+                }
+            }
         }
     }
     
@@ -211,6 +240,9 @@ public class Race
         
         //print the | for the end of the track
         System.out.print('|');
+        System.out.print(' ');
+        System.out.print(theHorse.getName().toUpperCase());
+        System.out.print("(Current confidence: " + (double)Math.round(theHorse.getConfidence() * 100.0) / 100.0 + ")");
     }
         
     
