@@ -31,6 +31,9 @@ public class RaceGui {
         ImageIcon horseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFull.png");
         horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
 
+        ImageIcon fallenHorseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFall.png");
+        fallenHorseIcon.setImage(fallenHorseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
+
         drawRacetrack(trackPanel, roadPiece, lanes, length);
 
         for (int i = 0; i < horses.length; i++) {
@@ -38,25 +41,31 @@ public class RaceGui {
             horses[i].goBackToStart();
         }
 
-        AtomicBoolean finished = new AtomicBoolean(false);
-        AtomicBoolean anyAlive = new AtomicBoolean(true);
+        // AtomicBoolean finished = new AtomicBoolean(false);
+        // AtomicBoolean anyAlive = new AtomicBoolean(true);
 
         Timer timer;
 
-        timer = new Timer(1000, new ActionListener() {
+        timer = new Timer(200, new ActionListener() {
             public void actionPerformed(ActionEvent e) {
+                boolean finished = false;
+                boolean anyAlive = true;
                 JLabel horseLabel;
-                anyAlive.set(false);
+                anyAlive = false;
                 
-                for (int i = 0; i < horses.length; i++) {
-                    if(!horses[i].hasFallen()) anyAlive.set(true);
-                    moveHorse(horses[i]);
-                }
+                // for (int i = 0; i < horses.length; i++) {
+                //     if(!horses[i].hasFallen()) anyAlive.set(true);
+                //     moveHorse(horses[i]);
+                // }
 
                 drawRacetrack(trackPanel, roadPiece, lanes, length);
 
                 for (int i = 0; i < horses.length; i++) {
-                    horseLabel = new JLabel(horseIcon);
+                    if (horses[i].hasFallen()) {
+                        horseLabel = new JLabel(fallenHorseIcon);
+                    } else {
+                        horseLabel = new JLabel(horseIcon);
+                    }
 
                     trackPanel.remove(lanes * length - 1);
                     trackPanel.add(horseLabel, i * length + horses[i].getDistanceTravelled());
@@ -66,11 +75,16 @@ public class RaceGui {
 
                 for (int i = 0; i < horses.length; i++) {
                     if (horses[i].getDistanceTravelled() >= length-1) {
-                        finished.set(true);
+                        finished = true;
                     }
                 }
 
-                if (!anyAlive.get() || finished.get()) {
+                for (int i = 0; i < horses.length; i++) {
+                    if(!horses[i].hasFallen()) anyAlive = true;
+                    moveHorse(horses[i]);
+                }
+
+                if (!anyAlive || finished) {
                     ((Timer)e.getSource()).stop();
                     linesSlider.setEnabled(true);
                     lengthSlider.setEnabled(true);
