@@ -22,6 +22,22 @@ public class RaceGui {
         }
     }
 
+    public static void addStartHorses(JPanel trackPanel, int lanes, int length) {
+        ImageIcon horseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFull.png");
+        horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
+
+
+        JLabel horseLabel;
+        for (int i = 0; i < lanes; i++) {
+            horseLabel = new JLabel(horseIcon);
+
+            trackPanel.remove(lanes * length - 1);
+            trackPanel.add(horseLabel, i * length);
+            trackPanel.repaint();
+            trackPanel.revalidate();
+        }
+    }
+
     public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton) {
         Random random = new Random();
         Horse[] horses = new Horse[lanes];
@@ -33,6 +49,7 @@ public class RaceGui {
         fallenHorseIcon.setImage(fallenHorseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
 
         drawRacetrack(trackPanel, roadPiece, lanes, length);
+        addStartHorses(trackPanel, lanes, length);
 
         for (int i = 0; i < horses.length; i++) {
             horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
@@ -103,6 +120,7 @@ public class RaceGui {
                     linesSlider.setEnabled(true);
                     lengthSlider.setEnabled(true);
                     startButton.setEnabled(true);
+                    
                     frame.setMinimumSize(null);
                     frame.pack();
                     frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
@@ -152,6 +170,7 @@ public class RaceGui {
         roadPiece.setImage(roadPiece.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
 
         drawRacetrack(raceTrackPanel, roadPiece, lanes, length);
+        addStartHorses(raceTrackPanel, lanes, length);
 
         frame.add(raceTrackPanel, constraints);
         /* Road Pieces End */
@@ -186,6 +205,7 @@ public class RaceGui {
         linesSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
+                addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue());
                 infoPanel.removeAll();
                 frame.setMinimumSize(null);
                 frame.pack();
@@ -197,6 +217,7 @@ public class RaceGui {
         lengthSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
+                addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue());
                 infoPanel.removeAll();
                 frame.setMinimumSize(null);
                 frame.pack();
@@ -207,6 +228,7 @@ public class RaceGui {
 
         JButton startButton = new JButton("Start Race");
         startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+        startButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -217,7 +239,13 @@ public class RaceGui {
             }
         });
 
+        JButton resetButton = new JButton("Reset Race");
+
+        JLabel title = new JLabel("Num of Lanes:");
+        controlsPanel.add(title);
         controlsPanel.add(linesSlider);
+        title = new JLabel("Length of track:");
+        controlsPanel.add(title);
         controlsPanel.add(lengthSlider);
         controlsPanel.add(startButton);
         frame.add(controlsPanel, constraints);
