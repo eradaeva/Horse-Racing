@@ -38,7 +38,7 @@ public class RaceGui {
         }
     }
 
-    public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton) {
+    public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton, JButton resetButton) {
         Random random = new Random();
         Horse[] horses = new Horse[lanes];
 
@@ -120,6 +120,7 @@ public class RaceGui {
                     linesSlider.setEnabled(true);
                     lengthSlider.setEnabled(true);
                     startButton.setEnabled(true);
+                    resetButton.setEnabled(true);
                     
                     frame.setMinimumSize(null);
                     frame.pack();
@@ -227,19 +228,35 @@ public class RaceGui {
         });
 
         JButton startButton = new JButton("Start Race");
-        startButton.setAlignmentX(Component.CENTER_ALIGNMENT);
-        startButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        // startButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        startButton.setHorizontalAlignment(JButton.CENTER);
+
+        JButton resetButton = new JButton("Reset Race");
 
         startButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 linesSlider.setEnabled(false);
                 lengthSlider.setEnabled(false);
                 startButton.setEnabled(false);
-                startRace(frame, raceTrackPanel, infoPanel, linesSlider.getValue(), lengthSlider.getValue(), roadPiece, linesSlider, lengthSlider, startButton);
+                resetButton.setEnabled(false);
+                startRace(frame, raceTrackPanel, infoPanel, linesSlider.getValue(), lengthSlider.getValue(), roadPiece, linesSlider, lengthSlider, startButton, resetButton);
             }
         });
 
-        JButton resetButton = new JButton("Reset Race");
+        // resetButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
+        resetButton.setHorizontalAlignment(JButton.CENTER);
+
+        resetButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
+                addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue());
+                infoPanel.removeAll();
+                frame.setMinimumSize(null);
+                frame.pack();
+                frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+                frame.setMaximumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+            }
+        });
 
         JLabel title = new JLabel("Num of Lanes:");
         controlsPanel.add(title);
@@ -248,6 +265,7 @@ public class RaceGui {
         controlsPanel.add(title);
         controlsPanel.add(lengthSlider);
         controlsPanel.add(startButton);
+        controlsPanel.add(resetButton);
         frame.add(controlsPanel, constraints);
 
         constraints = new GridBagConstraints();
