@@ -2,7 +2,6 @@ package Part2;
 
 import Part1.Horse;
 import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.awt.*;
 import java.awt.event.*;
 
@@ -23,11 +22,10 @@ public class RaceGui {
         }
     }
 
-    public static void startRace(JPanel trackPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton) {
+    public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton) {
         Random random = new Random();
         Horse[] horses = new Horse[lanes];
 
-        // JLabel horseLabel;
         ImageIcon horseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFull.png");
         horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
 
@@ -37,12 +35,16 @@ public class RaceGui {
         drawRacetrack(trackPanel, roadPiece, lanes, length);
 
         for (int i = 0; i < horses.length; i++) {
-            horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.1, 1));
+            horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
             horses[i].goBackToStart();
         }
 
-        // AtomicBoolean finished = new AtomicBoolean(false);
-        // AtomicBoolean anyAlive = new AtomicBoolean(true);
+        infoPanel.setMinimumSize(new Dimension(1, roadSideLength*lanes));
+
+        frame.setMinimumSize(null);
+        frame.pack();
+        frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+        frame.setMaximumSize(new Dimension(frame.getWidth(), frame.getHeight()));
 
         Timer timer;
 
@@ -52,13 +54,21 @@ public class RaceGui {
                 boolean anyAlive = true;
                 JLabel horseLabel;
                 anyAlive = false;
-                
-                // for (int i = 0; i < horses.length; i++) {
-                //     if(!horses[i].hasFallen()) anyAlive.set(true);
-                //     moveHorse(horses[i]);
-                // }
 
                 drawRacetrack(trackPanel, roadPiece, lanes, length);
+
+                JLabel confidenceLabels[] = new JLabel[lanes];
+
+                for (int i = 0; i < horses.length; i++) {
+                    if(!horses[i].hasFallen()) anyAlive = true;
+                    moveHorse(horses[i]);
+                }
+
+                for (int i = 0; i < horses.length; i++) {
+                    if (horses[i].getDistanceTravelled() >= length-1 && !horses[i].hasFallen()) {
+                        finished = true;
+                    }
+                }
 
                 for (int i = 0; i < horses.length; i++) {
                     if (horses[i].hasFallen()) {
@@ -73,15 +83,19 @@ public class RaceGui {
                     trackPanel.revalidate();
                 }
 
-                for (int i = 0; i < horses.length; i++) {
-                    if (horses[i].getDistanceTravelled() >= length-1) {
-                        finished = true;
-                    }
+                infoPanel.removeAll();
+
+                for (int i = 0; i < lanes; i++) {
+                    confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: " + (finished || !anyAlive ? (horses[i].getDistanceTravelled() >= length-1 ? (horses[i].hasFallen() ? "Lost " : "Won ") : "Lost ") : (horses[i].hasFallen() ? "Fallen" : "Running ")));
+                    confidenceLabels[i].setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
+                    infoPanel.add(confidenceLabels[i]);
                 }
 
-                for (int i = 0; i < horses.length; i++) {
-                    if(!horses[i].hasFallen()) anyAlive = true;
-                    moveHorse(horses[i]);
+                if (frame.getPreferredSize().getWidth() > frame.getWidth()) {
+                    frame.setMinimumSize(null);
+                    frame.pack();
+                    frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+                    frame.setMaximumSize(new Dimension(frame.getWidth(), frame.getHeight()));
                 }
 
                 if (!anyAlive || finished) {
@@ -89,6 +103,10 @@ public class RaceGui {
                     linesSlider.setEnabled(true);
                     lengthSlider.setEnabled(true);
                     startButton.setEnabled(true);
+                    frame.setMinimumSize(null);
+                    frame.pack();
+                    frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+                    frame.setMaximumSize(new Dimension(frame.getWidth(), frame.getHeight()));
                 }
             }
         });
@@ -146,7 +164,7 @@ public class RaceGui {
 
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
-        JSlider linesSlider = new JSlider(1, 5, 3);
+        JSlider linesSlider = new JSlider(2, 5, 3);
 
         linesSlider.setPaintTicks(true);
         linesSlider.setPaintTrack(true);
@@ -154,17 +172,21 @@ public class RaceGui {
         linesSlider.setMajorTickSpacing(1);
         linesSlider.setMinorTickSpacing(1);
 
-        JSlider lengthSlider = new JSlider(2, 15, 8);
+        JSlider lengthSlider = new JSlider(2, 14, 8);
 
         lengthSlider.setPaintTicks(true);
         lengthSlider.setPaintTrack(true);
         lengthSlider.setPaintLabels(true);
-        lengthSlider.setMajorTickSpacing(13);
+        lengthSlider.setMajorTickSpacing(12);
         lengthSlider.setMinorTickSpacing(1);
+
+        JPanel infoPanel = new JPanel();
+        infoPanel.setLayout(new BoxLayout(infoPanel, BoxLayout.Y_AXIS));
 
         linesSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
+                infoPanel.removeAll();
                 frame.setMinimumSize(null);
                 frame.pack();
                 frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
@@ -175,6 +197,7 @@ public class RaceGui {
         lengthSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
+                infoPanel.removeAll();
                 frame.setMinimumSize(null);
                 frame.pack();
                 frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
@@ -190,7 +213,7 @@ public class RaceGui {
                 linesSlider.setEnabled(false);
                 lengthSlider.setEnabled(false);
                 startButton.setEnabled(false);
-                startRace(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), roadPiece, linesSlider, lengthSlider, startButton);
+                startRace(frame, raceTrackPanel, infoPanel, linesSlider.getValue(), lengthSlider.getValue(), roadPiece, linesSlider, lengthSlider, startButton);
             }
         });
 
@@ -198,11 +221,14 @@ public class RaceGui {
         controlsPanel.add(lengthSlider);
         controlsPanel.add(startButton);
         frame.add(controlsPanel, constraints);
+
+        constraints = new GridBagConstraints();
+        constraints.gridx = 2;
+        constraints.gridy = 0;
+        constraints.fill = GridBagConstraints.VERTICAL;
+
+        frame.add(infoPanel, constraints);
         /* Controls End */
-
-        /* Horses Start*/
-
-        /* Horses End */
 
         frame.pack();
         frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
