@@ -19,6 +19,9 @@ public class RaceGui {
     private static Horse[] horses;
     private static double balance = 1000.0;
     private static HashMap<Integer, Double> currentBets = new HashMap<>();
+    private static final String[] colors = new String[]{"Yellow", "Blue", "Green", "Pink", "Red"};
+    private static String[] colorsChosen;
+    private static JComboBox<String>[] choiceBoxes;
 
     private static double[] calculatePayouts(int length){
         double[] payouts = new double[horses.length];
@@ -79,19 +82,20 @@ public class RaceGui {
     }
 
     public static void addStartHorses(JPanel trackPanel, int lanes, int length, JPanel infoPanel) {
-        ImageIcon horseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFull.png");
-        horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
+        ImageIcon horseIcon;
 
         JLabel confidenceLabels[] = new JLabel[lanes];
 
         for (int i = 0; i < lanes; i++) {
-            confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: Ready");
+            confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: Ready ");
             confidenceLabels[i].setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
             infoPanel.add(confidenceLabels[i]);
         }
 
         JLabel horseLabel;
         for (int i = 0; i < lanes; i++) {
+            horseIcon = new ImageIcon("Part2/Sprites/Horses/" + colorsChosen[i] + "HorseFull.png");
+            horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
             horseLabel = new JLabel(horseIcon);
 
             trackPanel.remove(lanes * length - 1);
@@ -102,12 +106,6 @@ public class RaceGui {
     }
 
     public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton, JButton resetButton, JButton betButton, JLabel balanceLabel) {
-        ImageIcon horseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFull.png");
-        horseIcon.setImage(horseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
-
-        ImageIcon fallenHorseIcon = new ImageIcon("Part2/Sprites/Horses/Yellow/yellowHorseFall.png");
-        fallenHorseIcon.setImage(fallenHorseIcon.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
-
         infoPanel.removeAll();
 
         drawRacetrack(trackPanel, roadPiece, lanes, length);
@@ -131,6 +129,8 @@ public class RaceGui {
                 boolean finished = false;
                 boolean anyAlive = true;
                 JLabel horseLabel;
+                ImageIcon runningImage;
+                ImageIcon fallingImage;
                 anyAlive = false;
                 Random random = new Random();
 
@@ -149,9 +149,13 @@ public class RaceGui {
 
                 for (int i = 0; i < horses.length; i++) {
                     if (horses[i].hasFallen()) {
-                        horseLabel = new JLabel(fallenHorseIcon);
+                        fallingImage = new ImageIcon("Part2/Sprites/Horses/" + colorsChosen[i] + "HorseFall.png");
+                        fallingImage.setImage(fallingImage.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
+                        horseLabel = new JLabel(fallingImage); 
                     } else {
-                        horseLabel = new JLabel(horseIcon);
+                        runningImage = new ImageIcon("Part2/Sprites/Horses/" + colorsChosen[i] + "HorseFull.png");
+                        runningImage.setImage(runningImage.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
+                        horseLabel = new JLabel(runningImage); 
                     }
 
                     trackPanel.remove(lanes * length - 1);
@@ -165,7 +169,7 @@ public class RaceGui {
                 JLabel confidenceLabels[] = new JLabel[lanes];
 
                 for (int i = 0; i < lanes; i++) {
-                    confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: " + (finished || !anyAlive ? (horses[i].getDistanceTravelled() >= length-1 ? (horses[i].hasFallen() ? "Lost " : "Won ") : "Lost ") : (horses[i].hasFallen() ? "Fallen" : "Running ")));
+                    confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: " + (finished || !anyAlive ? (horses[i].getDistanceTravelled() >= length-1 ? (horses[i].hasFallen() ? "Lost " : "Won ") : "Lost ") : (horses[i].hasFallen() ? "Fallen " : "Running ")));
                     confidenceLabels[i].setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
                     infoPanel.add(confidenceLabels[i]);
                 }
@@ -260,11 +264,12 @@ public class RaceGui {
 
         /* Road Pieces Start */
         GridBagConstraints constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.NONE; // Do not resize the component
-        constraints.gridx = 1;
+        constraints.fill = GridBagConstraints.NONE; 
+        constraints.gridx = 2;
         constraints.gridy = 0;
 
         JPanel raceTrackPanel = new JPanel(new GridLayout(lanes, length, 0, 0));
+        JPanel settings = new JPanel();
 
         ImageIcon roadPiece = new ImageIcon("Part2/Sprites/roadPiece.png");
         roadPiece.setImage(roadPiece.getImage().getScaledInstance(roadSideLength, roadSideLength, Image.SCALE_DEFAULT));
@@ -273,11 +278,6 @@ public class RaceGui {
         /* Road Pieces End */
 
         /* Controls */
-        constraints = new GridBagConstraints();
-        constraints.fill = GridBagConstraints.BOTH;
-        constraints.gridx = 0;
-        constraints.gridy = 0;
-        
         JPanel controlsPanel = new JPanel();
         controlsPanel.setLayout(new BoxLayout(controlsPanel, BoxLayout.Y_AXIS));
         JSlider linesSlider = new JSlider(2, 5, 3);
@@ -290,12 +290,12 @@ public class RaceGui {
 
         JLabel balanceLabel = new JLabel("Balance: " + DecimalFormat.getCurrencyInstance(Locale.US).format(Math.floor(balance * 100) / 100.0));
 
-        JSlider lengthSlider = new JSlider(2, 14, 8);
+        JSlider lengthSlider = new JSlider(2, 13, 8);
 
         lengthSlider.setPaintTicks(true);
         lengthSlider.setPaintTrack(true);
         lengthSlider.setPaintLabels(true);
-        lengthSlider.setMajorTickSpacing(12);
+        lengthSlider.setMajorTickSpacing(11);
         lengthSlider.setMinorTickSpacing(1);
 
         JPanel infoPanel = new JPanel();
@@ -312,6 +312,45 @@ public class RaceGui {
                 for (int i = 0; i < horses.length; i++) {
                     horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
                     horses[i].goBackToStart();
+                }
+
+                settings.removeAll();
+
+                colorsChosen = new String[horses.length];
+
+                JComboBox<String>[] tempBoxes = choiceBoxes.clone();
+                choiceBoxes = new JComboBox[horses.length];
+                for (int i = 0; i < Math.min(choiceBoxes.length, tempBoxes.length); i++) {
+                    choiceBoxes[i] = tempBoxes[i];
+                }
+
+                for (int i = 0; i < horses.length; i++) {
+                    if (choiceBoxes[i] == null) {
+                        JComboBox<String> colorChoice = new JComboBox<>(colors);
+                        choiceBoxes[i] = colorChoice;
+                    }
+                    settings.add(choiceBoxes[i]);
+
+                    if (colorsChosen[i] == null) {
+                        colorsChosen[i] = choiceBoxes[i].getSelectedItem().toString().toLowerCase();
+                    } 
+
+                    choiceBoxes[i].addItemListener(new ItemListener() {
+                        public void itemStateChanged(ItemEvent e) {
+                            Object choiceBox = e.getItemSelectable();
+
+                            for (int j = 0; j < choiceBoxes.length; j++) {
+                                if (choiceBox == choiceBoxes[j]) {
+                                    colorsChosen[j] = (String)choiceBoxes[j].getSelectedItem().toString().toLowerCase();
+                                    break;
+                                }
+                            }
+
+                            drawRacetrack(raceTrackPanel, roadPiece,  linesSlider.getValue(), lengthSlider.getValue());
+                            infoPanel.removeAll();
+                            addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
+                        }
+                    });
                 }
 
                 addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
@@ -344,10 +383,8 @@ public class RaceGui {
         }
 
         drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
-        addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
 
         JButton startButton = new JButton("Start Race");
-        // startButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
         startButton.setHorizontalAlignment(JButton.CENTER);
 
         JButton resetButton = new JButton("Reset Race");
@@ -364,7 +401,6 @@ public class RaceGui {
             }
         });
 
-        // resetButton.setMaximumSize(new Dimension(Integer.MAX_VALUE, 20));
         resetButton.setHorizontalAlignment(JButton.CENTER);
 
         resetButton.addActionListener(new ActionListener() {
@@ -389,6 +425,48 @@ public class RaceGui {
             }
         });
         /* Controls End */
+
+        /* Settings Start */
+        colorsChosen = new String[horses.length];
+        settings.setLayout(new BoxLayout(settings, BoxLayout.Y_AXIS));
+
+        choiceBoxes = new JComboBox[horses.length];
+
+        for (int i = 0; i < horses.length; i++) {
+            JComboBox<String> colorChoice = new JComboBox<>(colors);
+            choiceBoxes[i] = colorChoice;
+
+            colorsChosen[i] = "yellow";
+
+            colorChoice.addItemListener(new ItemListener() {
+                public void itemStateChanged(ItemEvent e) {
+                    Object choiceBox = e.getItemSelectable();
+
+                    for (int j = 0; j < choiceBoxes.length; j++) {
+                        if (choiceBox == choiceBoxes[j]) {
+                            colorsChosen[j] = (String)choiceBoxes[j].getSelectedItem().toString().toLowerCase();
+                            break;
+                        }
+                    }
+
+                    drawRacetrack(raceTrackPanel, roadPiece,  linesSlider.getValue(), lengthSlider.getValue());
+                    infoPanel.removeAll();
+                    addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
+                }
+            });
+
+            settings.add(colorChoice);
+        }
+
+        addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
+
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.VERTICAL;
+        constraints.gridx = 1;
+        constraints.gridy = 0;
+
+        frame.add(settings, constraints);
+        /* Settings End */
 
         /* Betting Start */
         betButton.addActionListener(new ActionListener() {
@@ -479,10 +557,16 @@ public class RaceGui {
         controlsPanel.add(resetButton);
         controlsPanel.add(betButton);
         controlsPanel.add(balanceLabel);
+
+        constraints = new GridBagConstraints();
+        constraints.fill = GridBagConstraints.BOTH;
+        constraints.gridx = 0;
+        constraints.gridy = 0;
+
         frame.add(controlsPanel, constraints);
 
         constraints = new GridBagConstraints();
-        constraints.gridx = 2;
+        constraints.gridx = 3;
         constraints.gridy = 0;
         constraints.fill = GridBagConstraints.VERTICAL;
 
