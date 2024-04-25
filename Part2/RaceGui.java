@@ -86,6 +86,8 @@ public class RaceGui {
 
         JLabel confidenceLabels[] = new JLabel[lanes];
 
+        infoPanel.removeAll();
+
         for (int i = 0; i < lanes; i++) {
             confidenceLabels[i] = new JLabel("     " + horses[i].getName().toUpperCase() + " (Confidence: " + Math.round(horses[i].getConfidence() * 100) + "%) Status: Ready ");
             confidenceLabels[i].setMaximumSize(new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
@@ -106,8 +108,6 @@ public class RaceGui {
     }
 
     public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton, JButton resetButton, JButton betButton, JLabel balanceLabel) {
-        infoPanel.removeAll();
-
         drawRacetrack(trackPanel, roadPiece, lanes, length);
         addStartHorses(trackPanel, lanes, length, infoPanel);
 
@@ -188,6 +188,9 @@ public class RaceGui {
                     startButton.setEnabled(true);
                     resetButton.setEnabled(true);
                     betButton.setEnabled(true);
+                    for (JComboBox<String> choiceBox : choiceBoxes) {
+                        choiceBox.setEnabled(true);
+                    }
                     
                     frame.setMinimumSize(null);
                     frame.pack();
@@ -304,7 +307,6 @@ public class RaceGui {
         linesSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
-                infoPanel.removeAll();
 
                 Random random = new Random();
                 horses = new Horse[linesSlider.getValue()];
@@ -347,14 +349,14 @@ public class RaceGui {
                             }
 
                             drawRacetrack(raceTrackPanel, roadPiece,  linesSlider.getValue(), lengthSlider.getValue());
-                            infoPanel.removeAll();
+                            // infoPanel.removeAll();
                             addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
                         }
                     });
                 }
 
+                // infoPanel.removeAll();
                 addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
-
                 frame.setMinimumSize(null);
                 frame.pack();
                 frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
@@ -365,7 +367,7 @@ public class RaceGui {
         lengthSlider.addChangeListener(new ChangeListener() {
             public void stateChanged(ChangeEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
-                infoPanel.removeAll();
+                // infoPanel.removeAll();
                 addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
                 frame.setMinimumSize(null);
                 frame.pack();
@@ -397,6 +399,10 @@ public class RaceGui {
                 startButton.setEnabled(false);
                 resetButton.setEnabled(false);
                 betButton.setEnabled(false);
+                for (JComboBox<String> choiceBox : choiceBoxes) {
+                    choiceBox.setEnabled(false);
+                }
+
                 startRace(frame, raceTrackPanel, infoPanel, linesSlider.getValue(), lengthSlider.getValue(), roadPiece, linesSlider, lengthSlider, startButton, resetButton, betButton, balanceLabel);
             }
         });
@@ -406,7 +412,7 @@ public class RaceGui {
         resetButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 drawRacetrack(raceTrackPanel, roadPiece, linesSlider.getValue(), lengthSlider.getValue());
-                infoPanel.removeAll();
+                
 
                 Random random = new Random();
                 horses = new Horse[linesSlider.getValue()];
@@ -416,6 +422,7 @@ public class RaceGui {
                     horses[i].goBackToStart();
                 }
 
+                // infoPanel.removeAll();
                 addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
 
                 frame.setMinimumSize(null);
@@ -450,8 +457,8 @@ public class RaceGui {
                     }
 
                     drawRacetrack(raceTrackPanel, roadPiece,  linesSlider.getValue(), lengthSlider.getValue());
-                    infoPanel.removeAll();
                     addStartHorses(raceTrackPanel, linesSlider.getValue(), lengthSlider.getValue(), infoPanel);
+                    resetButton.doClick();
                 }
             });
 
