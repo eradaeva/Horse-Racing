@@ -54,7 +54,7 @@ public class HorseRacing {
                 }
             }
         } else if (choice == 2) {
-            RaceGui.launchApp();
+            RaceGui.startRaceGUI();
         } else {
             System.out.println("Error: incorrect choice");
         }

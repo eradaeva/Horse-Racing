@@ -81,7 +81,7 @@ public class RaceGui {
         }
     }
 
-    public static void addStartHorses(JPanel trackPanel, int lanes, int length, JPanel infoPanel) {
+    private static void addStartHorses(JPanel trackPanel, int lanes, int length, JPanel infoPanel) {
         ImageIcon horseIcon;
 
         JLabel confidenceLabels[] = new JLabel[lanes];
@@ -107,7 +107,7 @@ public class RaceGui {
         }
     }
 
-    public static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton, JButton resetButton, JButton betButton, JLabel balanceLabel) {
+    private static void startRace(JFrame frame, JPanel trackPanel, JPanel infoPanel, int lanes, int length, ImageIcon roadPiece, JSlider linesSlider, JSlider lengthSlider, JButton startButton, JButton resetButton, JButton betButton, JLabel balanceLabel) {
         drawRacetrack(trackPanel, roadPiece, lanes, length);
         addStartHorses(trackPanel, lanes, length, infoPanel);
 
@@ -239,7 +239,7 @@ public class RaceGui {
         timer.start();
     }
 
-    public static void drawRacetrack(JPanel trackPanel, ImageIcon trackPiece, int lanes, int length) {
+    private static void drawRacetrack(JPanel trackPanel, ImageIcon trackPiece, int lanes, int length) {
         trackPanel.removeAll();
         trackPanel.setLayout(new GridLayout(lanes, length, 0, 0));
 
@@ -258,7 +258,7 @@ public class RaceGui {
         }
     }
 
-    public static void launchApp() {
+    public static void startRaceGUI() {
         final int lanes = 3;
         final int length = 8;
 
@@ -312,7 +312,7 @@ public class RaceGui {
                 horses = new Horse[linesSlider.getValue()];
 
                 for (int i = 0; i < horses.length; i++) {
-                    horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
+                    horses[i] = Horse.createHorse('H', "Horse " + i, random.nextDouble(0.15, 1));
                     horses[i].goBackToStart();
                 }
 
@@ -380,7 +380,7 @@ public class RaceGui {
         horses = new Horse[linesSlider.getValue()];
 
         for (int i = 0; i < horses.length; i++) {
-            horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
+            horses[i] = Horse.createHorse('H', "Horse " + i, random.nextDouble(0.15, 1));
             horses[i].goBackToStart();
         }
 
@@ -418,7 +418,7 @@ public class RaceGui {
                 horses = new Horse[linesSlider.getValue()];
 
                 for (int i = 0; i < horses.length; i++) {
-                    horses[i] = new Horse('H', "Horse " + i, random.nextDouble(0.15, 1));
+                    horses[i] = Horse.createHorse('H', "Horse " + i, random.nextDouble(0.15, 1));
                     horses[i].goBackToStart();
                 }
 
