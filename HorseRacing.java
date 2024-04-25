@@ -22,7 +22,7 @@ public class HorseRacing {
 
         Race race = new Race(distance);
         for (int i = 1; i <= horsesNum; i++) {
-            horse = new Horse(
+            horse = Horse.createHorse(
                 symbols[random.nextInt(symbols.length)], 
                 "Horse " + i, 
                 random.nextDouble(0.1, 1)

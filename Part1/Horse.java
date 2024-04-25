@@ -20,7 +20,7 @@ public class Horse
     /**
      * Constructor for objects of class Horse
      */
-    public Horse(char horseSymbol, String horseName, double horseConfidence)
+    private Horse(char horseSymbol, String horseName, double horseConfidence)
     {
        this.confidence = horseConfidence;
        this.name = horseName;
@@ -29,7 +29,14 @@ public class Horse
        this.eliminated = false;
     }
     
-    
+    public static Horse createHorse(char horseSymbol, String horseName, double horseConfidence) {
+        if (horseConfidence > 1) return null;
+        if (horseConfidence < 0) return null;
+        if (horseName.equals("")) return null;
+
+        Horse horse = new Horse(horseSymbol, horseName, horseConfidence);
+        return horse;
+    }
     
     //Other methods of class Horse
     public void fall()
@@ -75,6 +82,8 @@ public class Horse
 
     public void setConfidence(double newConfidence)
     {
+        if (newConfidence > 1) newConfidence = 1;
+        if (newConfidence < 0) newConfidence = 0;
         this.confidence = newConfidence;
     }
     

@@ -1,2 +1,2 @@
-# Horsec Racing
- Horse Rasing Project
+# Horse Racing
+Horse Rasing Project
