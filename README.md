@@ -47,16 +47,16 @@ Methods:
 Methods:
 - addHorse(Horse horse): Adds a horse to the race.
 - startRace(): Starts the race.
-- Race(int distance): Creates an instance of race.
+- createRace(int distance): Creates an instance of race.
 
 #### Example of direct usage:
 ```
 // Create instances of horses
-Horse horse1 = Horse.("Seabiscuit", 'S');
-Horse horse2 = new Horse("Secretariat", 'R');
+Horse horse1 = Horse.createHorse('S', "The Great Horse", 0.75);
+Horse horse2 =  Horse.createHorse('F', "The Greater Horse", 0.99);
 
 // Create a race and add horses
-Race race = new Race();
+Race race = Race.createRace(15);
 race.addHorse(horse1);
 race.addHorse(horse2);
 
@@ -72,3 +72,10 @@ race.startRace();
 ### Public Interfaces
 #### RaceGui.java (Part2.RaceGui)
 - startRaceGUI(): Starts the GUI version of the game
+
+#### Example of direct usage:
+```
+RaceGui.startRaceGUI();
+// Important!
+// The files containing sprites for GUI version must have same relative direction from the main file, as in the original version.
+```
