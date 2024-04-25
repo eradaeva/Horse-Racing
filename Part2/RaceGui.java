@@ -132,6 +132,7 @@ public class RaceGui {
                 boolean anyAlive = true;
                 JLabel horseLabel;
                 anyAlive = false;
+                Random random = new Random();
 
                 drawRacetrack(trackPanel, roadPiece, lanes, length);
 
@@ -188,6 +189,17 @@ public class RaceGui {
                     frame.pack();
                     frame.setMinimumSize(new Dimension(frame.getWidth(), frame.getHeight()));
                     frame.setMaximumSize(new Dimension(frame.getWidth(), frame.getHeight()));
+
+                    for (int i = 0; i < horses.length; i++) {
+                        if (horses[i].getDistanceTravelled() >= length-1 && !horses[i].hasFallen()) {
+                            horses[i].setConfidence(horses[i].getConfidence() + random.nextDouble(0.01, 0.1));
+                            if (horses[i].getConfidence() > 1) {
+                                horses[i].setConfidence(1);
+                            }
+                        } else {
+                            horses[i].setConfidence(horses[i].getConfidence() - random.nextDouble(0.01, 0.1));
+                        }
+                    }
 
                     if (!currentBets.isEmpty()) {
                         double totalWins = 0;
