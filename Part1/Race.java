@@ -21,10 +21,17 @@ public class Race
      * 
      * @param distance the length of the racetrack (in metres/yards...)
      */
-    public Race(int distance)
+    private Race(int distance)
     {
         // initialise instance variables
         raceLength = distance;
+    }
+
+    public static Race createRace(int distance) {
+        if (distance < 2) {
+            return null;
+        }
+        return new Race(distance);
     }
     
     /**
@@ -35,13 +42,8 @@ public class Race
      */
     public void addHorse(Horse theHorse, int laneNumber)
     {
-        if (laneNumber <= maxHorses && laneNumber > 0) {
-            horses[laneNumber-1] = theHorse;
-        }
-        else
-        {
-            System.out.println("Cannot add horse to lane " + laneNumber + " because there is no such lane");
-        }
+        horses[laneNumber-1] = theHorse;
+
     }
     
     /**

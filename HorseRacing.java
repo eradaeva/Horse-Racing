@@ -27,9 +27,9 @@ public class HorseRacing {
             System.out.print("Choose number of horses: ");
             int horsesNum = Integer.parseInt(scanner.nextLine());
 
-        Race race = new Race(distance);
-        for (int i = 1; i <= horsesNum; i++) {
-            horse = Horse.createHorse(
+            Race race = Race.createRace(distance);
+            for (int i = 1; i <= horsesNum; i++) {
+                horse = Horse.createHorse(
                 symbols[random.nextInt(symbols.length)], 
                 "Horse " + i, 
                 random.nextDouble(0.1, 1)
